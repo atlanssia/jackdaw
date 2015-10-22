@@ -6,19 +6,29 @@ import (
 
     "github.com/samuel/go-zookeeper/zk"
     kfk "github.com/Shopify/sarama"
+    "net/http"
+    "os"
 )
 
 func main() {
+    http.Handle("/", http.FileServer(http.Dir("static")))
+    http.HandleFunc("/status", status)
+
+    bind := ":8600"
+    fmt.Printf("listening on %s...", bind)
+    err := http.ListenAndServe(bind, nil)
+    if err != nil {
+        panic(err)
+    }
+}
+
+func watchData() {
     c, _, err := zk.Connect([]string{"10.180.130.177"}, time.Second) //*10)
     if err != nil {
         panic(err)
     }
     defer c.Close()
 
-    watchData(c)
-}
-
-func watchData(zc *zk.Conn) {
 //    path := "/consumers/console-consumer-45553/offsets/ttt/0"
 
 //    children, childrenStat, err := zc.Children(path)

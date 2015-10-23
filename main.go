@@ -3,16 +3,18 @@ package main
 import (
     "fmt"
     "time"
-
     "github.com/samuel/go-zookeeper/zk"
     kfk "github.com/Shopify/sarama"
     "net/http"
-    "os"
 )
+
+func init() {
+    initConf()
+}
 
 func main() {
     http.Handle("/", http.FileServer(http.Dir("static")))
-    http.HandleFunc("/status", status)
+    http.HandleFunc("/topics", listTopics)
 
     bind := ":8600"
     fmt.Printf("listening on %s...", bind)
@@ -22,23 +24,17 @@ func main() {
     }
 }
 
-func watchData() {
-    c, _, err := zk.Connect([]string{"10.180.130.177"}, time.Second) //*10)
+func listTopics(w http.ResponseWriter, r *http.Request) {
+
+    path := "/brokers/topics"
+    topics, err := lsChildren(path)
     if err != nil {
-        panic(err)
+        writeError(w, err)
+        return
     }
-    defer c.Close()
-
-//    path := "/consumers/console-consumer-45553/offsets/ttt/0"
-
-//    children, childrenStat, err := zc.Children(path)
-//    if err != nil {
-//        panic(err)
-//    }
-//    fmt.Printf("%+v\n %+v\n", children, childrenStat)
 
     // from kafka
-    client, err := kfk.NewClient([]string{"10.180.130.177:9092"}, kfk.NewConfig())
+    client, err := kfk.NewClient([]string{"1.2.3.4:9092"}, kfk.NewConfig())
     if err != nil {
         panic(err)
     }
@@ -62,3 +58,30 @@ func watchData() {
 //        watchData(zc)
 //    }
 }
+
+func lsChildren(path string) (children []string, err error) {
+    zc, _, err := zk.Connect(appConf.Zookeepers, time.Second)
+    if err != nil {
+        return
+    }
+    defer zc.Close()
+
+    children, _, err = zc.Children(path)
+    if err != nil {
+        return
+    }
+    return
+}
+
+//ls /brokers/ids
+//[0]
+
+//get /brokers/ids/0
+//{"jmx_port":-1,"timestamp":"1445518677618","host":"1.2.3.4","version":1,"port":9092}
+
+//ls /brokers/topics
+//[ttt]
+//get /brokers/topics/ttt
+//{"version":1,"partitions":{"0":[0]}}
+//get /brokers/topics/ttt/partitions/0/state
+//{"controller_epoch":2,"leader":0,"version":1,"leader_epoch":1,"isr":[0]}

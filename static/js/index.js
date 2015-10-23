@@ -4,11 +4,11 @@
 
 /* Define API endpoints once globally */
 $.fn.api.settings.api = {
-    'get followers' : '/followers/{id}?results={/count}',
-    'create user'   : '/create',
+    'list topics' : '/topics',
+    'list brokers' : '/brokers',
     'add user'      : '/add/{id}',
     'follow user'   : '/follow/{id}',
-    'search'        : '/search/?query={value}'
+    'search'        : '//api.github.com/search/repositories?q=golang'
 };
 
 $(document)
@@ -44,33 +44,38 @@ $(document)
 
         $('.item.topics')
             .api({
-                action: 'add user',
+                action: 'search',
                 //on: 'mouseenter',
-                urlData: {
-                    id: 23
-                },
                 onResponse: function(response) {
                     // make some adjustments to response
+                    alert('response goes here' + response.items[0].name)
+                    $('.segment').html('ooo')
                     return response;
                 },
-                successTest: function(response) {
-                    // test whether a json response is valid
-                    return response.success || false;
-                },
+//                successTest: function(response) {
+//                    // test whether a json response is valid
+//                    alert('successTest: ' + response.success)
+//                    return response.success || false;
+//                },
                 onComplete: function(response) {
                     // always called after xhr complete
+                    alert('onComplete goes here')
                 },
                 onSuccess: function(response) {
                     // valid response and response.success = true
+                    alert('onSuccess goes here')
                 },
                 onFailure: function(response) {
                     // request failed, or valid response but response.success = false
+                    alert('onFailure goes here')
                 },
                 onError: function(errorMessage) {
                     // invalid response
+                    alert('onError goes here')
                 },
                 onAbort: function(errorMessage) {
                     // navigated to a new page, CORS issue, or user canceled request
+                    alert('onAbort goes here')
                 }
             })
             .state({

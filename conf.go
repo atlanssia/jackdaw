@@ -12,7 +12,7 @@ type App struct {
 var appConf App
 
 func initConf() {
-    file, _ := os.Open("app.json")
+    file, _ := os.Open("conf/app.json")
     decoder := json.NewDecoder(file)
     appConf = App{}
     err := decoder.Decode(&appConf)

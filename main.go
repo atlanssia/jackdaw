@@ -6,6 +6,8 @@ import (
     "github.com/samuel/go-zookeeper/zk"
     kfk "github.com/Shopify/sarama"
     "net/http"
+    "github.com/araframework/ara"
+    "encoding/json"
 )
 
 func init() {
@@ -13,15 +15,12 @@ func init() {
 }
 
 func main() {
-    http.Handle("/", http.FileServer(http.Dir("static")))
-    http.HandleFunc("/topics", listTopics)
+    router := ara.NewRouter()
 
-    bind := ":8600"
-    fmt.Printf("listening on %s...", bind)
-    err := http.ListenAndServe(bind, nil)
-    if err != nil {
-        panic(err)
-    }
+    router.Handle("/", http.FileServer(http.Dir("static")))
+    router.HandleFunc("/topics", listTopics)
+
+    ara.Start(router)
 }
 
 func listTopics(w http.ResponseWriter, r *http.Request) {
@@ -33,13 +32,26 @@ func listTopics(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    resp := make(map[string]string, len(topics))
+    for _, topic := range topics {
+        resp[topic] = "/uri/here?abc=123"
+    }
+
+    encoder := json.NewEncoder(w)
+    err = encoder.Encode(resp)
+//    b, err := json.Marshal(topics)
+//    if err != nil {
+//        fmt.Println("error:", err)
+//    }
+//    w.Write(b)
+
     // from kafka
-    client, err := kfk.NewClient([]string{"1.2.3.4:9092"}, kfk.NewConfig())
+    client, err := kfk.NewClient([]string{"127.0.0.1:9092"}, kfk.NewConfig())
     if err != nil {
         panic(err)
     }
     client.Config().ClientID = "jackdaw"
-    latestOffset, err := client.GetOffset("ttt", 0, kfk.OffsetNewest)
+    latestOffset, err := client.GetOffset("tpk001", 0, kfk.OffsetNewest)
     if err != nil {
         panic(err)
     }

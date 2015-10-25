@@ -41,7 +41,7 @@ func (c *Controller) ListTopics(w http.ResponseWriter, r *http.Request) {
         panic(err)
     }
     defer client.Close()
-    
+
     client.Config().ClientID = "jackdaw"
     latestOffset, err := client.GetOffset("tpk001", 0, kfk.OffsetNewest)
     if err != nil {

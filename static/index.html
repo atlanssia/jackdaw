@@ -52,12 +52,21 @@
 
 <div class="container">
 
-    <div class="starter-template">
-        <ul class="nav nav-tabs">
-            <li role="presentation" class="active"><a href="#">Brokers</a></li>
-            <li role="presentation"><a href="#">Topics</a></li>
-            <li role="presentation"><a href="#">Messages</a></li>
+    <div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#brokers" aria-controls="brokers" role="tab" data-toggle="tab">Brokers</a></li>
+            <li role="presentation"><a href="#topics" aria-controls="topics" role="tab" data-toggle="tab">Topics</a></li>
+            <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+            <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
         </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="brokers">...1</div>
+            <div role="tabpanel" class="tab-pane" id="topics">..2.</div>
+            <div role="tabpanel" class="tab-pane" id="messages">..3.</div>
+            <div role="tabpanel" class="tab-pane" id="settings">...4</div>
+        </div>
     </div>
 
 </div><!-- /.container -->
@@ -67,5 +76,6 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="js/jquery-2.1.4.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>

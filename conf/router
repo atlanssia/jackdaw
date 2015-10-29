@@ -1,2 +1,3 @@
 /            FS:static
 /topics      ListTopics
+/topics/{id} Topic

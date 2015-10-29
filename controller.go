@@ -77,3 +77,7 @@ func (c *Controller)lsChildren(path string) (children []string, err error) {
     }
     return
 }
+
+func (c *Controller) Topic(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(r.Form.Get("id")))
+}

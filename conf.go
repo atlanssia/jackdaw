@@ -13,6 +13,8 @@ var appConf App
 
 func initConf() {
     file, _ := os.Open("conf/app.json")
+    defer file.Close()
+    
     decoder := json.NewDecoder(file)
     appConf = App{}
     err := decoder.Decode(&appConf)

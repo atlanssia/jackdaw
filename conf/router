@@ -3,5 +3,6 @@
 /brokers      ListBrokers
 /brokers/{id} Broker
 
-/topics       ListTopics
+/groups       ListGroups
+
 /topics/{id}  Topic

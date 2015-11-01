@@ -24,7 +24,7 @@ $(document)
                 success: function(data) {
                     alert(data);
                     $.each( data, function( key, val ) {
-                        var jsonObj = $.parseJSON(val)
+                        var jsonObj = $.parseJSON(val);
                         $("#brokers_table").append(
                             "<tr><td>" + key + "</td><td>" + jsonObj.host + "</td><td>" + jsonObj.port + "</td><td>" + jsonObj.timestamp + "</td><td>" + jsonObj.jmx_port + "</td><td>" + jsonObj.version + "</td></tr>"
                         );
@@ -33,15 +33,38 @@ $(document)
             })
         })
 
-        $("[aria-controls='topics']").click(function (e) {
+        // map[groupName]map[topicName]map[partitionId]map[string]string
+        $("[aria-controls='groups']").click(function (e) {
             $.ajax({
-                url: "/topics",
+                url: "/groups",
                 type: "GET",
                 success: function(data) {
-                    alert(data);
-                    $.each( data, function( key, val ) {
-                        alert(key + " : " + val);
-                        $("#topics").html(val);
+                    $.each( data, function( gName, val ) {
+                        alert(gName + " : " + val);
+                        $.each( val, function( topicName, val ) {
+                            alert(topicName + " : " + val);
+                            $.each( val, function( partitionId, val ) {
+                                alert(partitionId + " : " + val);
+                                var offset = "", logSize = "", lag = "";
+                                $.each( val, function( key, val ) {
+                                    alert(key + " : " + val);
+                                    if (key === "offset") {
+                                        offset = val;
+                                    } else if (key === "logSize") {
+                                        logSize = val;
+                                    } else if (key === "lag") {
+                                        lag = val;
+                                    }
+                                });
+
+                                $("#groups_table").append(
+                                    "<tr><td>" + gName + "</td><td>" + topicName + "</td><td>" + partitionId + "</td><td>" + offset + "</td><td>" + logSize + "</td><td>" + lag + "</td><td> - </td></tr>"
+                                );
+                                //$("#groups_table").html(val);
+                            });
+                            //$("#groups_table").html(val);
+                        });
+                        //$("#groups_table").html(val);
                     });
                 }
             })

@@ -56,9 +56,9 @@
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#brokers" aria-controls="brokers" role="tab" data-toggle="tab">Brokers</a></li>
-            <li role="presentation"><a href="#topics" aria-controls="topics" role="tab" data-toggle="tab">Topics</a></li>
-            <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-            <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+            <li role="presentation"><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab">Groups</a></li>
+            <!--<li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>-->
+            <!--<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>-->
         </ul>
         <!-- Tab panes -->
         <div class="tab-content">
@@ -68,9 +68,13 @@
                     <tr><th>Broker ID</th><th>Host</th><th>Port</th><th>Last Start Time</th><th>JMX Port</th><th>Version</th></tr>
                 </table>
             </div>
-            <div role="tabpanel" class="tab-pane" id="topics">..2.</div>
-            <div role="tabpanel" class="tab-pane" id="messages">..3.</div>
-            <div role="tabpanel" class="tab-pane" id="settings">...4</div>
+            <div role="tabpanel" class="tab-pane" id="groups">
+                <table class="table"  id="groups_table">
+                    <tr><th>Group</th><th>Topic</th><th>Partition</th><th>offset</th><th>Log Size</th><th>Lag</th><th>Owner</th></tr>
+                </table>
+            </div>
+            <!--<div role="tabpanel" class="tab-pane" id="messages">..3.</div>-->
+            <!--<div role="tabpanel" class="tab-pane" id="settings">...4</div>-->
         </div>
     </div>
 

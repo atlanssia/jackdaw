@@ -25,14 +25,14 @@ func (c *Controller)lsChildren(path string) (children []string, err error) {
     return
 }
 
-func (c *Controller) getChildren(path string) (json string, err error) {
+func (c *Controller) getChildren(path string) (value string, err error) {
     zc, _, err := zk.Connect(utils.AppConf.Zookeepers, time.Second)
     if err != nil {
         return
     }
     defer zc.Close()
 
-    value, _, err := zc.Get(path)
-    json = string(value)
+    valueBytes, _, err := zc.Get(path)
+    value = string(valueBytes)
     return
 }

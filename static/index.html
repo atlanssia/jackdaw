@@ -62,7 +62,12 @@
         </ul>
         <!-- Tab panes -->
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="brokers">...1</div>
+            <div role="tabpanel" class="tab-pane active" id="brokers">
+                <!-- Table -->
+                <table class="table"  id="brokers_table">
+                    <tr><th>Broker ID</th><th>Host</th><th>Port</th><th>Last Start Time</th><th>JMX Port</th><th>Version</th></tr>
+                </table>
+            </div>
             <div role="tabpanel" class="tab-pane" id="topics">..2.</div>
             <div role="tabpanel" class="tab-pane" id="messages">..3.</div>
             <div role="tabpanel" class="tab-pane" id="settings">...4</div>

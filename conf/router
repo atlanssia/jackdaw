@@ -1,3 +1,7 @@
-/            FS:static
-/topics      ListTopics
-/topics/{id} Topic
+/             FS:static
+
+/brokers      ListBrokers
+/brokers/{id} Broker
+
+/topics       ListTopics
+/topics/{id}  Topic

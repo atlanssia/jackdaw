@@ -1,24 +1,18 @@
-package main
+package controller
 import (
-    "github.com/araframework/ara"
     kfk "github.com/Shopify/sarama"
     "net/http"
     "encoding/json"
     "fmt"
-    "time"
-    "github.com/samuel/go-zookeeper/zk"
+    "github.com/atlanssia/jackdaw/utils"
 )
-
-type Controller struct {
-    ara.Controller
-}
 
 func (c *Controller) ListTopics(w http.ResponseWriter, r *http.Request) {
 
     path := "/brokers/topics"
     topics, err := c.lsChildren(path)
     if err != nil {
-        writeError(w, err)
+        utils.WriteError(w, err)
         return
     }
 
@@ -61,21 +55,6 @@ func (c *Controller) ListTopics(w http.ResponseWriter, r *http.Request) {
     //    if e.Type == zk.EventNodeDataChanged {
     //        watchData(zc)
     //    }
-}
-
-
-func (c *Controller)lsChildren(path string) (children []string, err error) {
-    zc, _, err := zk.Connect(appConf.Zookeepers, time.Second)
-    if err != nil {
-        return
-    }
-    defer zc.Close()
-
-    children, _, err = zc.Children(path)
-    if err != nil {
-        return
-    }
-    return
 }
 
 func (c *Controller) Topic(w http.ResponseWriter, r *http.Request) {

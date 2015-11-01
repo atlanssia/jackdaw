@@ -1,4 +1,5 @@
-package main
+package utils
+
 import (
     "os"
     "encoding/json"
@@ -9,17 +10,17 @@ type App struct {
     Zookeepers []string `json:"zookeepers"`
 }
 
-var appConf App
+var AppConf App
 
-func initConf() {
+func init() {
     file, _ := os.Open("conf/app.json")
     defer file.Close()
     
     decoder := json.NewDecoder(file)
-    appConf = App{}
-    err := decoder.Decode(&appConf)
+    AppConf = App{}
+    err := decoder.Decode(&AppConf)
     if err != nil {
         fmt.Println("error:", err)
     }
-    fmt.Println(appConf)
+    fmt.Println(AppConf)
 }

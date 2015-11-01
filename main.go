@@ -3,17 +3,18 @@ package main
 import (
     "github.com/araframework/ara"
     "reflect"
+    "github.com/atlanssia/jackdaw/controller"
 )
 
 func init() {
-    initConf()
+    // init conf here?
 }
 
 func main() {
     // 1. tell the framework what type my controller is
     router := ara.NewRouter()
 
-    router.SetControllerValue(reflect.ValueOf(&Controller{}))
+    router.SetControllerValue(reflect.ValueOf(&controller.Controller{}))
 
 //    router.Handle("/", http.FileServer(http.Dir("static")))
 //    router.HandleFunc("/topics", listTopics)

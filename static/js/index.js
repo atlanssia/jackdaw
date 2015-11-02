@@ -22,7 +22,7 @@ $(document)
                 url: "/brokers",
                 type: "GET",
                 success: function(data) {
-                    alert(data);
+                    $("brokers_table").html("<tr><th>Broker ID</th><th>Host</th><th>Port</th><th>Last Start Time</th><th>JMX Port</th><th>Version</th></tr>");
                     $.each( data, function( key, val ) {
                         var jsonObj = $.parseJSON(val);
                         $("#brokers_table").append(
@@ -39,15 +39,16 @@ $(document)
                 url: "/groups",
                 type: "GET",
                 success: function(data) {
+                    $(#groups_table).html("<tr><th>Group</th><th>Topic</th><th>Partition</th><th>offset</th><th>Log Size</th><th>Lag</th><th>Owner</th></tr>");
                     $.each( data, function( gName, val ) {
-                        alert(gName + " : " + val);
+                        
                         $.each( val, function( topicName, val ) {
-                            alert(topicName + " : " + val);
+                            
                             $.each( val, function( partitionId, val ) {
-                                alert(partitionId + " : " + val);
+                                
                                 var offset = "", logSize = "", lag = "";
                                 $.each( val, function( key, val ) {
-                                    alert(key + " : " + val);
+                                    
                                     if (key === "offset") {
                                         offset = val;
                                     } else if (key === "logSize") {

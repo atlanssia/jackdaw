@@ -4,10 +4,23 @@ import (
     "github.com/araframework/ara"
     "reflect"
     "github.com/atlanssia/jackdaw/controller"
+    "os"
+    "os/signal"
 )
 
 func init() {
     // init conf here?
+    
+    // catch Ctrl-c and kill signal
+    sc := make(chan os.Signal, 1)
+    signal.Notify(sc, os.Interrupt, os.Kill)
+    go func() {
+        s := <-sc
+        
+        // do shutdown things
+        
+        os.Exit(0)
+    }()
 }
 
 func main() {

@@ -37,6 +37,7 @@ func (c *Controller) ListGroups(w http.ResponseWriter, r *http.Request) {
 
     ara.Logger().Debug("groups: %v", groups)
 
+    // return 404 if no group found(that means no consumer exists)
     if len(groups) <= 0 {
         ara.Logger().Debug("return 404")
         utils.Write404(w)

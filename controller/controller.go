@@ -4,15 +4,19 @@ import (
     "time"
     "github.com/atlanssia/jackdaw/utils"
     "github.com/samuel/go-zookeeper/zk"
+    kfk "github.com/Shopify/sarama"
     "path"
     "encoding/json"
-    "fmt"
     "strconv"
 )
 
 type Controller struct {
     ara.Controller
+    zc *zk.Conn
+    kc kfk.Client
 }
+
+type appLogger struct {}
 
 // {"jmx_port":-1,"timestamp":"1446362470753","host":"U","version":1,"port":9092}
 type Broker struct {
@@ -23,15 +27,73 @@ type Broker struct {
     Port      int `json:"port"`
 }
 
-// zookeeper cmd: ls /path
-func (c *Controller)lsChildren(path string) (children []string, err error) {
-    zc, _, err := zk.Connect(utils.AppConf.Zookeepers, time.Second)
+// close zookeeper and kafka connection while shutdown
+func (c *Controller) Release() {
+
+    if c.kc != nil {
+        err := c.kc.Close()
+        if err != nil {
+            ara.Logger().Debug("close kafka connection failed: %s", err.Error())
+        }
+    }
+
+    if c.zc != nil {
+        c.zc.Close()
+    }
+}
+
+// init zookeeper connection
+func (c *Controller) initZc() (err error) {
+    ara.Logger().Debug("init zookeeper client")
+    if c.zc != nil && c.zc.State() != zk.StateHasSession {
+        c.zc.Close()
+    }
+
+    c.zc, _, err = zk.Connect(utils.AppConf.Zookeepers, time.Second, c.loggerOption)
     if err != nil {
         return
     }
-    defer zc.Close()
 
-    children, _, err = zc.Children(path)
+    ara.Logger().Debug("new zookeeper client state: %v", c.zc.State())
+    return
+}
+
+// a loggerOption passed to zk.Conn
+func (c *Controller) loggerOption(conn *zk.Conn) {
+    logger := appLogger{}
+    conn.SetLogger(logger)
+}
+
+// implement interface zk.Conn.Logger
+// TODO output not right: /controller.go:69: Authenticated: id=[94863294880088115 6000], timeout=%!d(MISSING)
+func (l appLogger) Printf(s string, v ...interface{})  {
+    ara.Logger().Debug(s, v)
+}
+
+func (c *Controller) initKc() (err error) {
+    ara.Logger().Debug("init kafka client")
+    conn := c.getKafkaConn()
+    c.kc, err = kfk.NewClient(conn, kfk.NewConfig())
+    if err != nil {
+        ara.Logger().Debug(err.Error())
+        return
+    }
+
+    c.kc.Config().ClientID = "jackdaw"
+    ara.Logger().Debug("got a kafka client, closed: %v", c.kc.Closed())
+    return
+}
+
+// zookeeper cmd: ls /path
+func (c *Controller)lsChildren(path string) (children []string, err error) {
+    if c.zc == nil || c.zc.State() != zk.StateHasSession {
+        err = c.initZc()
+        if err != nil {
+            return
+        }
+    }
+
+    children, _, err = c.zc.Children(path)
     if err != nil {
         return
     }
@@ -39,13 +101,14 @@ func (c *Controller)lsChildren(path string) (children []string, err error) {
 }
 
 func (c *Controller) getChildren(path string) (value string, err error) {
-    zc, _, err := zk.Connect(utils.AppConf.Zookeepers, time.Second)
-    if err != nil {
-        return
+    if c.zc == nil || c.zc.State() != zk.StateHasSession {
+        err = c.initZc()
+        if err != nil {
+            return
+        }
     }
-    defer zc.Close()
 
-    valueBytes, _, err := zc.Get(path)
+    valueBytes, _, err := c.zc.Get(path)
     value = string(valueBytes)
     return
 }
@@ -63,7 +126,7 @@ func (c *Controller) getKafkaConn() []string {
         var b Broker
         err := json.Unmarshal([]byte(brokerJson), &b)
         if err != nil {
-            fmt.Println("error:", err)
+            ara.Logger().Debug("error: %v", err)
             continue
         }
         conn = append(conn, b.Host + ":" + strconv.Itoa(b.Port))

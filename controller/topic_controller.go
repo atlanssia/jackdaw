@@ -3,8 +3,8 @@ import (
     kfk "github.com/Shopify/sarama"
     "net/http"
     "encoding/json"
-    "fmt"
     "github.com/atlanssia/jackdaw/utils"
+    "github.com/araframework/ara"
 )
 
 func (c *Controller) ListTopics(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +42,7 @@ func (c *Controller) ListTopics(w http.ResponseWriter, r *http.Request) {
         panic(err)
     }
 
-    fmt.Printf("$$$$$$: %d\n", latestOffset)
+    ara.Logger().Debug("$$$$$$: %d", latestOffset)
 
     //    bts, stat, ch, err := zc.GetW(path)
     //    if err != nil {

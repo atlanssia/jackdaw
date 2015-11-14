@@ -3,7 +3,7 @@ import (
     "github.com/atlanssia/jackdaw/utils"
     "net/http"
     "encoding/json"
-    "fmt"
+    "github.com/araframework/ara"
 )
 
 //type broker struct {
@@ -29,7 +29,7 @@ func (c *Controller) ListBrokers(w http.ResponseWriter, r *http.Request) {
     encoder := json.NewEncoder(w)
     err = encoder.Encode(resp)
 
-    fmt.Printf("%v", resp)
+    ara.Logger().Debug("%v", resp)
 
     //    b, err := json.Marshal(topics)
     //    if err != nil {

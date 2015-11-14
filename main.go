@@ -2,7 +2,6 @@ package main
 
 import (
     "github.com/araframework/ara"
-    "reflect"
     "github.com/atlanssia/jackdaw/controller"
     "os"
     "os/signal"
@@ -10,24 +9,29 @@ import (
 
 func init() {
     // init conf here?
-    
+
+}
+
+func main() {
+
+    controller := &controller.Controller{}
+
     // catch Ctrl-c and kill signal
     sc := make(chan os.Signal, 1)
     signal.Notify(sc, os.Interrupt, os.Kill)
     go func() {
         s := <-sc
-        
-        // do shutdown things
-        
+        ara.Logger().Debug("[Jackdaw]Got signal %s, I will cleanup and exit now.\n", s)
+
+        controller.Release()
+
         os.Exit(0)
     }()
-}
 
-func main() {
     // 1. tell the framework what type my controller is
     router := ara.NewRouter()
 
-    router.SetControllerValue(reflect.ValueOf(&controller.Controller{}))
+    router.SetController(controller)
 
 //    router.Handle("/", http.FileServer(http.Dir("static")))
 //    router.HandleFunc("/topics", listTopics)

@@ -3,10 +3,10 @@ import (
     "net/http"
     "github.com/atlanssia/jackdaw/utils"
     "encoding/json"
-    "fmt"
     kfk "github.com/Shopify/sarama"
     "path"
     "strconv"
+    "github.com/araframework/ara"
 )
 
 // ls /consumers
@@ -34,6 +34,9 @@ func (c *Controller) ListGroups(w http.ResponseWriter, r *http.Request) {
         utils.WriteError(w, err)
         return
     }
+
+    ara.Logger().Debug("groups: %v", groups)
+    //TODO if groups is empty, return a not-found message
 
     // map[groupName]map[topicName]map[partitionId]map[string]string (last map is offset, log size and lag etc.)
     resp := make(map[string]map[string]map[string]map[string]string, len(groups))
@@ -97,7 +100,7 @@ func (c *Controller) ListGroups(w http.ResponseWriter, r *http.Request) {
     encoder := json.NewEncoder(w)
     err = encoder.Encode(resp)
     if err != nil {
-        fmt.Println(err.Error())
+        ara.Logger().Debug(err.Error())
     }
 
     //    b, err := json.Marshal(topics)
@@ -122,19 +125,22 @@ func (c *Controller) ListGroups(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) getLogSize(topic string, pid int32) int64 {
     // from kafka
-    conn := c.getKafkaConn()
-    client, err := kfk.NewClient(conn, kfk.NewConfig())
-    if err != nil {
-        panic(err)
-    }
-    defer client.Close()
-
-    client.Config().ClientID = "jackdaw"
-    latestOffset, err := client.GetOffset(topic, pid, kfk.OffsetNewest)
-    if err != nil {
-        panic(err)
+    if c.kc == nil || c.kc.Closed() {
+        err := c.initKc()
+        if err != nil {
+            // TODO send a err message
+            ara.Logger().Debug(err.Error())
+            panic(err)
+        }
     }
 
-    fmt.Printf("$$$$$$: %d\n", latestOffset)
+    latestOffset, err := c.kc.GetOffset(topic, pid, kfk.OffsetNewest)
+    if err != nil {
+        // TODO send a err message
+        ara.Logger().Debug(err.Error())
+        panic(err)
+    }
+
+    ara.Logger().Debug("last offset is: %d", latestOffset)
     return latestOffset
 }

@@ -3,7 +3,7 @@ package utils
 import (
     "os"
     "encoding/json"
-    "fmt"
+    "github.com/araframework/ara"
 )
 
 type App struct {
@@ -20,7 +20,7 @@ func init() {
     AppConf = App{}
     err := decoder.Decode(&AppConf)
     if err != nil {
-        fmt.Println("error:", err)
+        ara.Logger().Debug("error: %v", err)
     }
-    fmt.Println(AppConf)
+    ara.Logger().Debug("%v", AppConf)
 }

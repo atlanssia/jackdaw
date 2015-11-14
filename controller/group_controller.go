@@ -36,7 +36,12 @@ func (c *Controller) ListGroups(w http.ResponseWriter, r *http.Request) {
     }
 
     ara.Logger().Debug("groups: %v", groups)
-    //TODO if groups is empty, return a not-found message
+
+    if len(groups) <= 0 {
+        ara.Logger().Debug("return 404")
+        utils.Write404(w)
+        return
+    }
 
     // map[groupName]map[topicName]map[partitionId]map[string]string (last map is offset, log size and lag etc.)
     resp := make(map[string]map[string]map[string]map[string]string, len(groups))

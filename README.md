@@ -1,2 +1,2 @@
 # Jackdaw
-A Apache Kafka monitor tool
+An Apache Kafka monitor tool
